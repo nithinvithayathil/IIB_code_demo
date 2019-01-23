@@ -1,0 +1,39 @@
+!SESSION 2019-01-22 09:15:22.684 -----------------------------------------------
+eclipse.buildId=4.2.2.M20140918-1444
+java.fullversion=8.0.5.20 - pxa6480sr5fp20-20180802_01(SR5 FP20)
+JRE 1.8.0 Linux amd64-64-Bit Compressed References 20180731_393394 (JIT enabled, AOT enabled)
+OpenJ9   - bd23af8
+OMR      - ca1411c
+IBM      - 98805ca
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide -application com.ibm.etools.mft.bar.cmdline.mqsicreatebar -b test_flows.bar -o test_flows -skipWSErrorCheck
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide -application com.ibm.etools.mft.bar.cmdline.mqsicreatebar -data ESED_VENDORDSDITEM_SSIMS_IH_Publisher -b test_flows.bar -o test_flows -skipWSErrorCheck
+
+!ENTRY org.eclipse.emf.ecore 2 0 2019-01-22 09:15:25.040
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+!SESSION 2019-01-22 09:26:42.118 -----------------------------------------------
+eclipse.buildId=4.2.2.M20140918-1444
+java.fullversion=8.0.5.20 - pxa6480sr5fp20-20180802_01(SR5 FP20)
+JRE 1.8.0 Linux amd64-64-Bit Compressed References 20180731_393394 (JIT enabled, AOT enabled)
+OpenJ9   - bd23af8
+OMR      - ca1411c
+IBM      - 98805ca
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide -application com.ibm.etools.mft.bar.cmdline.mqsicreatebar -b test_flows.bar -o test_flows -skipWSErrorCheck
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide -application com.ibm.etools.mft.bar.cmdline.mqsicreatebar -data ESED_VENDORDSDITEM_SSIMS_IH_Publisher -b test_flows.bar -o test_flows -skipWSErrorCheck
+
+!ENTRY org.eclipse.emf.ecore 2 0 2019-01-22 09:26:44.563
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'
+!SESSION 2019-01-22 09:27:30.416 -----------------------------------------------
+eclipse.buildId=4.2.2.M20140918-1444
+java.fullversion=8.0.5.20 - pxa6480sr5fp20-20180802_01(SR5 FP20)
+JRE 1.8.0 Linux amd64-64-Bit Compressed References 20180731_393394 (JIT enabled, AOT enabled)
+OpenJ9   - bd23af8
+OMR      - ca1411c
+IBM      - 98805ca
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Framework arguments:  -showlocation -product com.ibm.etools.msgbroker.tooling.ide -application com.ibm.etools.mft.bar.cmdline.mqsicreatebar -b test_flows.bar -o test_flows -skipWSErrorCheck
+Command-line arguments:  -os linux -ws gtk -arch x86_64 -showlocation -product com.ibm.etools.msgbroker.tooling.ide -application com.ibm.etools.mft.bar.cmdline.mqsicreatebar -data ESED_VENDORDSDITEM_SSIMS_IH_Publisher -b test_flows.bar -o test_flows -skipWSErrorCheck
+
+!ENTRY org.eclipse.emf.ecore 2 0 2019-01-22 09:27:32.972
+!MESSAGE Both 'com.ibm.etools.javaee.core' and 'com.ibm.etools.mft.service.model' register an extension parser for 'application'

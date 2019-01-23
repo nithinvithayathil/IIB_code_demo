@@ -1,0 +1,377 @@
+
+BROKER SCHEMA com.abs.ssims.vendorItem
+
+/* ----------------------------------------------------------------------------
+ APPLICATION ID	: ESED
+ INTERFACE NAME	: VENDORITEM_SSIMS_TO_CDS
+ FLOW NAME		: ESED_SupplyChainXML_SSIMS_IH
+ DESCRIPTION	: PRODUCER :VENDOR SUPPLIED ITEM FROM SSIMS TO CDS IN CANONICAL FORMAT
+ AUTHOR			: UST
+ CREATED DT		: 12/10/2018
+-- ------------------------------------------------------------------------------
+ Program History
+ Project     Drop  Version Change Owner   Date       Description
+ -------   ------- ------- ------------   ----       -----------
+ DHID     		1     1.0    UST 		 12/10/2018   Initial Draft	
+                      1.1    UST         1/08/2019    Added New Attributes 
+ - ----------------------------------------------------------------------------*/
+
+-- External Variables 
+
+DECLARE topicString EXTERNAL CHARACTER '';
+
+CREATE COMPUTE MODULE ESED_VendorItemXML_SSIMS_DSD_SF_Compute
+
+
+CREATE FUNCTION Main() RETURNS BOOLEAN
+
+	BEGIN	
+-- Declare Namespace
+DECLARE Abs NAMESPACE 'http://collab.safeway.com/it/architecture/info/default.aspx';
+
+-- Declare Variable Constant for Document Data  
+DECLARE inOutInd CHARACTER 'Outbound from Albertson';
+
+DECLARE inDocNm CHARACTER 'VendorDSDItem';
+
+DECLARE inGtNm CHAR 'GoldenGate CDC';
+
+DECLARE srcCd CHAR 'Mainframe(SSIMS)';
+
+DECLARE tgtCd CHAR 'EDIS';
+
+DECLARE corp_item_cd CHARACTER '';
+
+DECLARE div CHARACTER '';
+
+DECLARE fac CHARACTER '';
+
+DECLARE corp_Id CHARACTER '';
+
+DECLARE div_Id CHARACTER '';
+
+DECLARE vsac CHARACTER '';
+
+DECLARE vnum CHARACTER '';
+
+-- Declare Input Reference
+
+DECLARE ipRef REFERENCE TO InputRoot.XMLNSC.ROWSET;
+
+DECLARE ipRefRow REFERENCE TO ipRef.ROW;
+
+CREATE NEXTSIBLING OF OutputRoot.MQMD DOMAIN 'MQRFH2';
+
+SET corp_Id = COALESCE(CAST(ipRefRow.CORP AS CHARACTER),'1');
+
+SET div_Id = COALESCE(CAST(ipRefRow.DIVISION AS CHARACTER),'1');
+
+SET corp_item_cd = CAST(ipRefRow.CORP_ITEM_CD AS CHARACTER);
+
+SET div = CAST(ipRefRow.DIVISION AS CHARACTER);
+
+SET vnum = CAST(ipRefRow.VEND_NUM AS CHARACTER);
+
+SET vsac = CAST(ipRefRow.VEND_SUB_ACNT AS CHARACTER);
+
+
+
+IF LENGTH(corp_Id) > 0 AND LENGTH(div_Id) > 0
+
+AND LENGTH(corp_item_cd) > 0
+
+AND LENGTH(div) > 0
+
+AND LENGTH(vnum) > 0
+
+AND LENGTH(vsac) > 0 THEN
+
+-- XML Document Declaration 
+
+CREATE FIRSTCHILD OF OutputRoot.XMLNSC TYPE XMLNSC.XmlDeclaration NAME 'XmlDeclaration';
+SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration)*.(XMLNSC.Attribute)version ='1.0';
+
+SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration)*.(XMLNSC.Attribute)encoding ='UTF-8';
+
+CREATE FIELD OutputRoot.XMLNSC.GetVendorDSDItem;
+
+DECLARE opRef REFERENCE TO OutputRoot.XMLNSC.GetVendorDSDItem;
+
+SET opRef.(XMLNSC.NamespaceDecl)xmlns:Abs = Abs;
+
+CREATE FIELD opRef.DocumentData ;
+
+CREATE FIELD opRef.DocumentData.Document ;
+
+DECLARE opRefDocData REFERENCE TO opRef.DocumentData.Document ;
+
+SET opRefDocData.(XMLNSC.Attribute)ReleaseId = '';
+
+SET opRefDocData.(XMLNSC.Attribute)VersionId = ''; 
+
+SET opRefDocData.(XMLNSC.Attribute)SystemEnvironmentCd = BrokerName;
+
+SET opRefDocData.Abs:DocumentID = '';
+
+SET opRefDocData.Abs:AlternateDocumentID = '';
+
+SET opRefDocData.Abs:InboundOutboundInd = inOutInd;
+
+SET opRefDocData.Abs:DocumentNm = inDocNm;
+
+SET opRefDocData.Abs:CreationDt = CAST(CURRENT_GMTTIMESTAMP AS CHARACTER FORMAT 'IU');
+
+SET opRefDocData.Abs:Description = '';
+
+SET opRefDocData.Abs:Description.(XMLNSC.Attribute)Type = '';
+
+SET opRefDocData.Abs:SourceApplicationCd = srcCd;
+
+SET opRefDocData.Abs:TargetApplicationCd = tgtCd;
+
+SET opRefDocData.Abs:Note = '';
+
+SET opRefDocData.Abs:Note.(XMLNSC.Attribute)Type = '';
+
+SET opRefDocData.Abs:GatewayNm = inGtNm;
+
+SET opRefDocData.Abs:SenderId = '';
+
+SET opRefDocData.Abs:SenderId.(XMLNSC.Attribute)QualifierCd = '';
+
+SET opRefDocData.Abs:ReceiverId = '';
+
+SET opRefDocData.Abs:ReceiverId.(XMLNSC.Attribute)QualifierCd = '';
+
+SET opRefDocData.Abs:RoutingSystemNm = '';
+
+SET opRefDocData.Abs:InternalFileTransferInd = '';
+
+SET opRefDocData.Abs:InterchangeDate = '';
+
+SET opRefDocData.Abs:InterchangeTime = '';
+
+SET opRefDocData.Abs:ExternalTargetInd = '';
+
+SET opRefDocData.Abs:DataClassification = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:DataClassificationLevel = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:DataClassificationLevel.Abs:Code = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:DataClassificationLevel.Abs:Description = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:BusinessSensitivityLevel = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:BusinessSensitivityLevel.Abs:Code = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:BusinessSensitivityLevel.Abs:Description = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:PHIdataInd = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:PCIdataInd = '';
+
+SET opRefDocData.Abs:DataClassification.Abs:PPIdataInd = '';
+
+-- Map Document field for DocumentData
+
+CREATE FIELD opRef.DocumentData.DocumentAction ;
+
+DECLARE opRefDocAction REFERENCE TO opRef.DocumentData.DocumentAction;
+
+SET opRefDocAction.Abs:ActionTypeCd = 'Update';
+
+SET opRefDocAction.Abs:RecordTypeCd = 'Change';
+
+-- Map fields for VendorSuppliedDSDItemData
+
+CREATE FIELD opRef.VendorSuppliedDSDItemData;
+
+-- Process All Input ROW(Vendor Item) 
+
+
+DECLARE ipRefRow REFERENCE TO ipRef.ROW[1];
+DECLARE i INTEGER 1;
+FOR inRef AS InputRoot.XMLNSC.ROWSET.ROW[] DO
+
+SET opRefDocData.(XMLNSC.Attribute)ReleaseId = COALESCE (inRef.CORP,'');
+DECLARE opRefDSDItemData REFERENCE TO opRef.VendorSuppliedDSDItemData ;
+
+ 
+
+SET opRefDSDItemData.CorporationId = COALESCE (inRef.CTLCORP,'') ; 
+
+SET opRefDSDItemData.DivisionId = COALESCE (inRef.CTLDIVISION,'') ;
+
+SET opRefDSDItemData.VendorSuppliedItem = '';
+ 
+--
+SET opRefDSDItemData.VendorSuppliedItem.Vendor = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.Vendor.VendorId = COALESCE (inRef.CTLVENDNUM, ' ');
+
+SET opRefDSDItemData.VendorSuppliedItem.Vendor.VendorSubAccountNbr = COALESCE (inRef.VEND_SUB_ACNT, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.Vendor.WarehouseVendorId = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.Vendor.BDRVendorId = COALESCE ( inRef.BDR_VEND_SUB,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.Vendor.VendorNm = COALESCE (inRef.NAME,'');
+
+--
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.CorporateItemCd = COALESCE (inRef.CORP_ITEM_CD, ' ');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId ='';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPC = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPC.(XMLNSC.Attribute)Qualifier = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPC.UPCNbr = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPC.UPCTxt = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents.PackInd = '' ;
+ 
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents.ManufacturerId = '' ;
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents.SalesId = '' ;
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents.CountryId = '' ;
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents.SystemId = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.UPCComponents.CheckDigit = ''  ;
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.GTINID = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorProductID = '' ; 
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.ManufProductId = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.SystemSpecificItemId = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.RFID = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.InternalItemId = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.BranchItemCd = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.ItemDescription = '';
+
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPC = COALESCE (inRef.VENDOR_UPC,'') ; 
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents.PackInd = COALESCE (inRef.VEN_UPC_PACK_IND,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents.ManufacturerId = COALESCE (inRef.VEN_UPC_MANUF,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents.SalesId = COALESCE (inRef.VEN_UPC_SALES,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents.CountryId = COALESCE (inRef.VEN_UPC_COUNTRY,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents.SystemId = COALESCE (inRef.VEN_UPC_SYSTEM, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorUPCComponents.CheckDigit = COALESCE (inRef.VEN_UPC_CHECK, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorConversionFactor = COALESCE (inRef.VEND_CONV_FCTR, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorProductNbr = COALESCE (inRef.VEND_PROD_CDE,'') ;
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.VendorPackCd = COALESCE (inRef.VEND_PKGE,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.VendorPackCube = COALESCE (inRef.CASE_CUBE,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.PalletLayer = COALESCE (inRef.VEND_PALLET_LAYER, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.PalletHeight = COALESCE (inRef.VEND_PALLET_HGHT,'');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.ItemUnitNbr = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.ItemSizeNbr = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorItemDimensions.UOMCd = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemId.VendorTermsId = COALESCE ( inRef.TERMS_ID , '');
+
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemStatus = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemStatus.Code = COALESCE (inRef.ITEM_STATUS, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemStatus.Description = '';
+
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.SuppliedToLocationType = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.SuppliedToLocationType.DSDInd = '';
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.SuppliedToLocationType.WarehouseInd = '';
+
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ShipUnitPackQty = COALESCE (inRef.PACK_WHSE, '');
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ShipUnitPackTypeCd = COALESCE (inRef.STR_RCV_PCK_TYP_CD, '');
+
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.WarehouseItemStatus  = '';
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.WarehouseItemStatus.StatusCd   = '';
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.WarehouseItemStatus.StatusDsc = inRef.STATUS_DST; 
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.WarehouseItemStatus.StatusEffDt  = COALESCE (inRef.DATE_CHANGE,'');
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.WarehouseItemStatus.CreateDt  = COALESCE (inRef.CREATE_DT,'');
+ 
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ShelfPackageCd = COALESCE (inRef.PACKAGE ,'');  
+SET opRefDSDItemData.VendorSuppliedItem.SuppliedItem.ItemUnitNbr = COALESCE (inRef.SIZE_DESC,''); 
+
+
+--Set Topic String for Pub/Sub
+   
+SET OutputRoot.Properties.Topic = topicString || '/' || opRefDSDItemData.DivisionId  ;
+ 
+SET OutputRoot.MQRFH2.psc.Command = 'Publish';
+SET OutputRoot.MQRFH2.psc.Topic = topicString || '/' || opRefDSDItemData.DivisionId ;
+
+SET OutputRoot.MQRFH2.psc.uniqId = InputRoot.MQRFH2.psc.uniqId||'|'|| OutputRoot.XMLNSC.VendorSuppliedDSDItemData.VendorSuppliedDSDItemData.*:CorporationId||'-'||
+										OutputRoot.XMLNSC.VendorSuppliedDSDItemData.VendorSuppliedDSDItemData.*:DivisionId||'-'||
+										OutputRoot.XMLNSC.VendorSuppliedDSDItemData.VendorSuppliedDSDItemData.*:VendorId||'-'|| 
+										OutputRoot.XMLNSC.VendorSuppliedDSDItemData.VendorSuppliedDSDItemData.*:CorporateItemCd;
+
+PROPAGATE TO TERMINAL 'out' DELETE NONE;
+
+SET i = i + 1;
+
+END FOR;
+
+MOVE ipRefRow NEXTSIBLING;
+
+ELSE
+
+END IF;
+
+
+-- Condition to through exception
+
+IF (Environment.Variables.exception IS NOT NULL) THEN
+
+THROW USER EXCEPTION VALUES
+
+('ESED05',
+
+'Deleted Records:'|| Environment.Variables.exception);
+
+END IF;
+
+DELETE FIELD Environment.Variables.exception;
+
+RETURN FALSE;
+
+END;
+
+END MODULE;
+
